@@ -61,15 +61,15 @@ export default function DataTable({ data = [], onSelectEntity }) {
   };
 
   const getStatusBadge = (statusStr) => {
-    if (!statusStr) return <span className="badge-info px-2 py-0.5 rounded-full text-xs font-semibold">Unknown</span>;
+    if (!statusStr) return <span className="badge-info px-2 py-0.5 rounded-full text-[11px] font-semibold">Unknown</span>;
     const s = statusStr.toLowerCase();
     if (s.includes('aktif') && !s.includes('non')) {
-      return <span className="badge-active px-2.5 py-0.5 rounded-full text-xs font-semibold">{statusStr}</span>;
+      return <span className="badge-active px-2.5 py-0.5 rounded-full text-[11px] font-semibold">{statusStr}</span>;
     }
     if (s.includes('non') || s.includes('tidak') || s.includes('suspend')) {
-      return <span className="badge-inactive px-2.5 py-0.5 rounded-full text-xs font-semibold">{statusStr}</span>;
+      return <span className="badge-inactive px-2.5 py-0.5 rounded-full text-[11px] font-semibold">{statusStr}</span>;
     }
-    return <span className="badge-info px-2.5 py-0.5 rounded-full text-xs font-semibold">{statusStr}</span>;
+    return <span className="badge-info px-2.5 py-0.5 rounded-full text-[11px] font-semibold">{statusStr}</span>;
   };
 
   // Export CSV
@@ -154,7 +154,7 @@ export default function DataTable({ data = [], onSelectEntity }) {
               </th>
 
               <th 
-                className="p-3.5 cursor-pointer hover:text-white transition-colors min-w-[170px]"
+                className="p-3.5 cursor-pointer hover:text-white transition-colors min-w-[160px]"
                 onClick={() => handleSort('pj_name')}
               >
                 <div className="flex items-center gap-1.5">
@@ -164,7 +164,7 @@ export default function DataTable({ data = [], onSelectEntity }) {
               </th>
               
               {/* Combined Kontak PJ Column */}
-              <th className="p-3.5 bg-indigo-950/40 text-indigo-300 min-w-[240px]">
+              <th className="p-3.5 bg-indigo-950/40 text-indigo-300 min-w-[230px]">
                 <div className="flex items-center gap-1.5 font-bold">
                   <Phone className="w-3.5 h-3.5 text-emerald-400" />
                   <span>Kontak PJ (HP, WA & Email)</span>
@@ -172,12 +172,12 @@ export default function DataTable({ data = [], onSelectEntity }) {
               </th>
 
               {/* Kontak Perusahaan */}
-              <th className="p-3.5 text-slate-300 min-w-[180px]">
+              <th className="p-3.5 text-slate-300 min-w-[170px]">
                 <span>Kontak Perusahaan</span>
               </th>
 
               <th 
-                className="p-3.5 cursor-pointer hover:text-white transition-colors min-w-[140px]"
+                className="p-3.5 cursor-pointer hover:text-white transition-colors min-w-[130px]"
                 onClick={() => handleSort('provinsi_name')}
               >
                 <div className="flex items-center gap-1.5">
@@ -186,17 +186,10 @@ export default function DataTable({ data = [], onSelectEntity }) {
                 </div>
               </th>
 
-              <th 
-                className="p-3.5 cursor-pointer hover:text-white transition-colors"
-                onClick={() => handleSort('badan_usaha_status')}
-              >
-                <div className="flex items-center gap-1.5">
-                  <span>Status</span>
-                  <ArrowUpDown className="w-3 h-3 text-slate-500" />
-                </div>
+              {/* Combined Status & Aksi Column */}
+              <th className="p-3.5 pr-5 text-right min-w-[140px]">
+                <span>Status & Detail</span>
               </th>
-
-              <th className="p-3.5 pr-5 text-right">Aksi</th>
             </tr>
           </thead>
 
@@ -293,7 +286,7 @@ export default function DataTable({ data = [], onSelectEntity }) {
                       <div className="text-slate-200 font-mono text-[11px]">
                         {item.badan_usaha_tlp ? `Telp: ${item.badan_usaha_tlp}` : '-'}
                       </div>
-                      <div className="text-indigo-300 text-[11px] truncate max-w-[160px]">
+                      <div className="text-indigo-300 text-[11px] truncate max-w-[150px]">
                         {item.badan_usaha_email || '-'}
                       </div>
                     </td>
@@ -307,29 +300,27 @@ export default function DataTable({ data = [], onSelectEntity }) {
                       </div>
                     </td>
 
-                    {/* Status */}
-                    <td className="p-3.5">
-                      {getStatusBadge(item.badan_usaha_status)}
-                    </td>
-
-                    {/* Action */}
+                    {/* Combined Status & Detail Action Column */}
                     <td className="p-3.5 pr-5 text-right">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onSelectEntity(item);
-                        }}
-                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-[11px] font-semibold transition-all"
-                      >
-                        <Eye className="w-3 h-3" /> Detail
-                      </button>
+                      <div className="flex flex-col items-end gap-1.5">
+                        {getStatusBadge(item.badan_usaha_status)}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onSelectEntity(item);
+                          }}
+                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-[11px] font-semibold transition-all"
+                        >
+                          <Eye className="w-3 h-3" /> Detail
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 );
               })
             ) : (
               <tr>
-                <td colSpan={8} className="p-8 text-center text-slate-500 text-xs">
+                <td colSpan={7} className="p-8 text-center text-slate-500 text-xs">
                   Tidak ada data yang sesuai dengan filter pencarian Anda.
                 </td>
               </tr>
