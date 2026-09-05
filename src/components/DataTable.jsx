@@ -104,8 +104,8 @@ export default function DataTable({ data = [], onSelectEntity }) {
         <div className="flex items-center gap-2">
           <Building2 className="w-5 h-5 text-indigo-400" />
           <div>
-            <h3 className="text-base font-bold text-white">Daftar Kontak & Perusahaan ABUJAPI</h3>
-            <p className="text-xs text-slate-400">Tabel Kontak Penanggung Jawab (HP/WA/Email) & Perusahaan</p>
+            <h3 className="text-base font-bold text-white">Daftar Perusahaan & Kontak ABUJAPI</h3>
+            <p className="text-xs text-slate-400">Kontak Penanggung Jawab (HP, WA, Email) & Profil Badan Usaha</p>
           </div>
         </div>
 
@@ -142,8 +142,9 @@ export default function DataTable({ data = [], onSelectEntity }) {
           <thead>
             <tr className="bg-slate-900/90 border-b border-slate-800 text-[11px] uppercase tracking-wider text-slate-400 font-bold">
               <th className="p-3.5 pl-5">#</th>
+              
               <th 
-                className="p-3.5 cursor-pointer hover:text-white transition-colors"
+                className="p-3.5 cursor-pointer hover:text-white transition-colors min-w-[200px]"
                 onClick={() => handleSort('badan_usaha_name')}
               >
                 <div className="flex items-center gap-1.5">
@@ -151,8 +152,9 @@ export default function DataTable({ data = [], onSelectEntity }) {
                   <ArrowUpDown className="w-3 h-3 text-slate-500" />
                 </div>
               </th>
+
               <th 
-                className="p-3.5 cursor-pointer hover:text-white transition-colors"
+                className="p-3.5 cursor-pointer hover:text-white transition-colors min-w-[170px]"
                 onClick={() => handleSort('pj_name')}
               >
                 <div className="flex items-center gap-1.5">
@@ -161,29 +163,21 @@ export default function DataTable({ data = [], onSelectEntity }) {
                 </div>
               </th>
               
-              {/* Prominent Contact PJ Column */}
-              <th className="p-3.5 bg-indigo-950/40 text-indigo-300">
+              {/* Combined Kontak PJ Column */}
+              <th className="p-3.5 bg-indigo-950/40 text-indigo-300 min-w-[240px]">
                 <div className="flex items-center gap-1.5 font-bold">
                   <Phone className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>Kontak PJ (HP & WA)</span>
+                  <span>Kontak PJ (HP, WA & Email)</span>
                 </div>
               </th>
 
-              {/* Email PJ */}
-              <th className="p-3.5 bg-indigo-950/40 text-indigo-300">
-                <div className="flex items-center gap-1.5 font-bold">
-                  <Mail className="w-3.5 h-3.5 text-sky-400" />
-                  <span>Email PJ</span>
-                </div>
-              </th>
-
-              {/* Telepon & Email Badan Usaha */}
-              <th className="p-3.5 text-slate-300">
+              {/* Kontak Perusahaan */}
+              <th className="p-3.5 text-slate-300 min-w-[180px]">
                 <span>Kontak Perusahaan</span>
               </th>
 
               <th 
-                className="p-3.5 cursor-pointer hover:text-white transition-colors"
+                className="p-3.5 cursor-pointer hover:text-white transition-colors min-w-[140px]"
                 onClick={() => handleSort('provinsi_name')}
               >
                 <div className="flex items-center gap-1.5">
@@ -191,6 +185,7 @@ export default function DataTable({ data = [], onSelectEntity }) {
                   <ArrowUpDown className="w-3 h-3 text-slate-500" />
                 </div>
               </th>
+
               <th 
                 className="p-3.5 cursor-pointer hover:text-white transition-colors"
                 onClick={() => handleSort('badan_usaha_status')}
@@ -200,6 +195,7 @@ export default function DataTable({ data = [], onSelectEntity }) {
                   <ArrowUpDown className="w-3 h-3 text-slate-500" />
                 </div>
               </th>
+
               <th className="p-3.5 pr-5 text-right">Aksi</th>
             </tr>
           </thead>
@@ -219,7 +215,7 @@ export default function DataTable({ data = [], onSelectEntity }) {
                     <td className="p-3.5 pl-5 font-mono text-slate-500 text-[11px]">{rowIndex}</td>
                     
                     {/* Badan Usaha Name */}
-                    <td className="p-3.5 min-w-[200px]">
+                    <td className="p-3.5">
                       <div className="font-bold text-slate-100 group-hover:text-indigo-300 transition-colors">
                         {item.badan_usaha_name || '-'}
                       </div>
@@ -229,7 +225,7 @@ export default function DataTable({ data = [], onSelectEntity }) {
                     </td>
 
                     {/* Penanggung Jawab */}
-                    <td className="p-3.5 min-w-[170px]">
+                    <td className="p-3.5">
                       <div className="font-bold text-white">
                         {item.pj_name || '-'}
                       </div>
@@ -238,11 +234,13 @@ export default function DataTable({ data = [], onSelectEntity }) {
                       </div>
                     </td>
 
-                    {/* Prominent Kontak PJ (Phone + WA Button) */}
-                    <td className="p-3.5 min-w-[190px] bg-indigo-950/20">
-                      {item.pj_phone ? (
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2">
+                    {/* Combined Kontak PJ (Phone + WA Button + Email) */}
+                    <td className="p-3.5 bg-indigo-950/20">
+                      <div className="space-y-1.5">
+                        
+                        {/* Phone & WA Button Row */}
+                        {item.pj_phone ? (
+                          <div className="flex items-center gap-2 flex-wrap">
                             <span className="font-mono font-bold text-emerald-400 text-xs">
                               {item.pj_phone}
                             </span>
@@ -253,59 +251,58 @@ export default function DataTable({ data = [], onSelectEntity }) {
                             >
                               {copiedText === `phone_${rowIndex}` ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
                             </button>
+
+                            {waUrl && (
+                              <a
+                                href={waUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={(e) => e.stopPropagation()}
+                                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[10px] shadow-sm transition-all transform hover:scale-105"
+                              >
+                                <MessageSquare className="w-2.5 h-2.5 fill-current" />
+                                <span>WA</span>
+                                <ExternalLink className="w-2 h-2 opacity-70" />
+                              </a>
+                            )}
                           </div>
+                        ) : (
+                          <div className="text-slate-500 font-mono text-[11px]">HP: -</div>
+                        )}
 
-                          {/* Direct WhatsApp Chat Button */}
-                          {waUrl && (
+                        {/* Email Row */}
+                        {item.pj_email ? (
+                          <div className="flex items-center gap-1">
+                            <Mail className="w-3 h-3 text-sky-400 shrink-0" />
                             <a
-                              href={waUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
+                              href={`mailto:${item.pj_email}`}
                               onClick={(e) => e.stopPropagation()}
-                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[11px] shadow-sm transition-all transform hover:scale-105"
+                              className="text-sky-400 hover:text-sky-300 hover:underline font-mono text-[11px] truncate max-w-[180px]"
+                              title={item.pj_email}
                             >
-                              <MessageSquare className="w-3 h-3 fill-current" />
-                              <span>Chat WhatsApp</span>
-                              <ExternalLink className="w-2.5 h-2.5 opacity-70" />
+                              {item.pj_email}
                             </a>
-                          )}
-                        </div>
-                      ) : (
-                        <span className="text-slate-500 font-mono text-[11px]">-</span>
-                      )}
-                    </td>
+                          </div>
+                        ) : null}
 
-                    {/* Email PJ */}
-                    <td className="p-3.5 min-w-[170px] bg-indigo-950/20">
-                      {item.pj_email ? (
-                        <a
-                          href={`mailto:${item.pj_email}`}
-                          onClick={(e) => e.stopPropagation()}
-                          className="inline-flex items-center gap-1 text-sky-400 hover:text-sky-300 hover:underline font-mono text-[11px]"
-                        >
-                          <Mail className="w-3 h-3 shrink-0" />
-                          <span className="truncate max-w-[150px]">{item.pj_email}</span>
-                        </a>
-                      ) : (
-                        <span className="text-slate-500 font-mono text-[11px]">-</span>
-                      )}
+                      </div>
                     </td>
 
                     {/* Kontak Perusahaan */}
-                    <td className="p-3.5 min-w-[180px]">
+                    <td className="p-3.5">
                       <div className="text-slate-200 font-mono text-[11px]">
-                        {item.badan_usaha_tlp ? `Telp: ${item.badan_usaha_tlp}` : ''}
+                        {item.badan_usaha_tlp ? `Telp: ${item.badan_usaha_tlp}` : '-'}
                       </div>
-                      <div className="text-indigo-300 text-[11px] truncate max-w-[150px]">
+                      <div className="text-indigo-300 text-[11px] truncate max-w-[160px]">
                         {item.badan_usaha_email || '-'}
                       </div>
                     </td>
 
                     {/* Wilayah */}
-                    <td className="p-3.5 min-w-[140px]">
+                    <td className="p-3.5">
                       <div className="font-semibold text-slate-200">{item.kota_name || '-'}</div>
                       <div className="text-[11px] text-slate-400 flex items-center gap-1">
-                        <MapPin className="w-3 h-3 text-indigo-400" />
+                        <MapPin className="w-3 h-3 text-indigo-400 shrink-0" />
                         {item.provinsi_name || '-'}
                       </div>
                     </td>
@@ -332,7 +329,7 @@ export default function DataTable({ data = [], onSelectEntity }) {
               })
             ) : (
               <tr>
-                <td colSpan={9} className="p-8 text-center text-slate-500 text-xs">
+                <td colSpan={8} className="p-8 text-center text-slate-500 text-xs">
                   Tidak ada data yang sesuai dengan filter pencarian Anda.
                 </td>
               </tr>
