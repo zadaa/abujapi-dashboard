@@ -1,7 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { 
   ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, 
-  ArrowUpDown, Eye, Download, FileSpreadsheet, Building2, MapPin 
+  ArrowUpDown, Eye, Download, Building2, MapPin, Phone, Mail, 
+  MessageSquare, ExternalLink, Copy, Check 
 } from 'lucide-react';
 
 export default function DataTable({ data = [], onSelectEntity }) {
@@ -9,6 +10,7 @@ export default function DataTable({ data = [], onSelectEntity }) {
   const [pageSize, setPageSize] = useState(20);
   const [sortField, setSortField] = useState('badan_usaha_name');
   const [sortDirection, setSortDirection] = useState('asc');
+  const [copiedText, setCopiedText] = useState(null);
 
   // Sorting
   const sortedData = useMemo(() => {
@@ -36,6 +38,28 @@ export default function DataTable({ data = [], onSelectEntity }) {
     }
   };
 
+  const copyToClipboard = (e, text, label) => {
+    e.stopPropagation();
+    if (!text) return;
+    navigator.clipboard.writeText(text);
+    setCopiedText(label);
+    setTimeout(() => setCopiedText(null), 2000);
+  };
+
+  // Format WhatsApp Link
+  const getWaUrl = (phoneStr, pjName, companyName) => {
+    if (!phoneStr) return null;
+    let cleaned = phoneStr.replace(/\D/g, '');
+    if (!cleaned) return null;
+    if (cleaned.startsWith('0')) {
+      cleaned = '62' + cleaned.substring(1);
+    } else if (!cleaned.startsWith('62')) {
+      cleaned = '62' + cleaned;
+    }
+    const message = encodeURIComponent(`Halo Yth. Bpk/Ibu ${pjName || ''}, kami dari Sekretariat ABUJAPI perihal data perusahaan ${companyName || ''}.`);
+    return `https://wa.me/${cleaned}?text=${message}`;
+  };
+
   const getStatusBadge = (statusStr) => {
     if (!statusStr) return <span className="badge-info px-2 py-0.5 rounded-full text-xs font-semibold">Unknown</span>;
     const s = statusStr.toLowerCase();
@@ -45,13 +69,10 @@ export default function DataTable({ data = [], onSelectEntity }) {
     if (s.includes('non') || s.includes('tidak') || s.includes('suspend')) {
       return <span className="badge-inactive px-2.5 py-0.5 rounded-full text-xs font-semibold">{statusStr}</span>;
     }
-    if (s.includes('proses') || s.includes('pending')) {
-      return <span className="badge-warning px-2.5 py-0.5 rounded-full text-xs font-semibold">{statusStr}</span>;
-    }
     return <span className="badge-info px-2.5 py-0.5 rounded-full text-xs font-semibold">{statusStr}</span>;
   };
 
-  // Export to CSV function
+  // Export CSV
   const exportToCSV = () => {
     if (!data || data.length === 0) return;
     const headers = Object.keys(data[0]);
@@ -69,7 +90,7 @@ export default function DataTable({ data = [], onSelectEntity }) {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.setAttribute('href', url);
-    link.setAttribute('download', `abujapi_filtered_data_${Date.now()}.csv`);
+    link.setAttribute('download', `abujapi_contacts_${Date.now()}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -82,14 +103,13 @@ export default function DataTable({ data = [], onSelectEntity }) {
       <div className="p-4 lg:p-5 border-b border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-2">
           <Building2 className="w-5 h-5 text-indigo-400" />
-          <h3 className="text-base font-bold text-white">Daftar Perusahaan & Badan Usaha</h3>
-          <span className="text-xs text-slate-400 font-medium">
-            ({sortedData.length.toLocaleString()} Perusahaan)
-          </span>
+          <div>
+            <h3 className="text-base font-bold text-white">Daftar Kontak & Perusahaan ABUJAPI</h3>
+            <p className="text-xs text-slate-400">Tabel Kontak Penanggung Jawab (HP/WA/Email) & Perusahaan</p>
+          </div>
         </div>
 
         <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
-          {/* Rows per page selector */}
           <div className="flex items-center gap-2 text-xs text-slate-400">
             <span>Tampilkan:</span>
             <select
@@ -106,7 +126,6 @@ export default function DataTable({ data = [], onSelectEntity }) {
             </select>
           </div>
 
-          {/* Export CSV Button */}
           <button
             onClick={exportToCSV}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition-all"
@@ -141,22 +160,34 @@ export default function DataTable({ data = [], onSelectEntity }) {
                   <ArrowUpDown className="w-3 h-3 text-slate-500" />
                 </div>
               </th>
-              <th className="p-3.5">No. Sertifikat</th>
-              <th 
-                className="p-3.5 cursor-pointer hover:text-white transition-colors"
-                onClick={() => handleSort('kota_name')}
-              >
-                <div className="flex items-center gap-1.5">
-                  <span>Kota / Kabupaten</span>
-                  <ArrowUpDown className="w-3 h-3 text-slate-500" />
+              
+              {/* Prominent Contact PJ Column */}
+              <th className="p-3.5 bg-indigo-950/40 text-indigo-300">
+                <div className="flex items-center gap-1.5 font-bold">
+                  <Phone className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Kontak PJ (HP & WA)</span>
                 </div>
               </th>
+
+              {/* Email PJ */}
+              <th className="p-3.5 bg-indigo-950/40 text-indigo-300">
+                <div className="flex items-center gap-1.5 font-bold">
+                  <Mail className="w-3.5 h-3.5 text-sky-400" />
+                  <span>Email PJ</span>
+                </div>
+              </th>
+
+              {/* Telepon & Email Badan Usaha */}
+              <th className="p-3.5 text-slate-300">
+                <span>Kontak Perusahaan</span>
+              </th>
+
               <th 
                 className="p-3.5 cursor-pointer hover:text-white transition-colors"
                 onClick={() => handleSort('provinsi_name')}
               >
                 <div className="flex items-center gap-1.5">
-                  <span>Provinsi</span>
+                  <span>Wilayah</span>
                   <ArrowUpDown className="w-3 h-3 text-slate-500" />
                 </div>
               </th>
@@ -177,50 +208,106 @@ export default function DataTable({ data = [], onSelectEntity }) {
             {paginatedData.length > 0 ? (
               paginatedData.map((item, index) => {
                 const rowIndex = startIndex + index + 1;
+                const waUrl = getWaUrl(item.pj_phone, item.pj_name, item.badan_usaha_name);
+
                 return (
                   <tr 
                     key={index}
-                    className="hover:bg-indigo-500/[0.04] transition-colors cursor-pointer group"
+                    className="hover:bg-indigo-500/[0.06] transition-colors cursor-pointer group"
                     onClick={() => onSelectEntity(item)}
                   >
                     <td className="p-3.5 pl-5 font-mono text-slate-500 text-[11px]">{rowIndex}</td>
                     
                     {/* Badan Usaha Name */}
-                    <td className="p-3.5">
+                    <td className="p-3.5 min-w-[200px]">
                       <div className="font-bold text-slate-100 group-hover:text-indigo-300 transition-colors">
                         {item.badan_usaha_name || '-'}
                       </div>
-                      <div className="text-[11px] text-slate-400 truncate max-w-[200px]">
-                        {item.badan_usaha_alamat || ''}
+                      <div className="text-[11px] text-slate-400 font-mono">
+                        {item.badan_usaha_sertifikat || ''}
                       </div>
                     </td>
 
                     {/* Penanggung Jawab */}
-                    <td className="p-3.5">
-                      <div className="font-semibold text-slate-200">
+                    <td className="p-3.5 min-w-[170px]">
+                      <div className="font-bold text-white">
                         {item.pj_name || '-'}
                       </div>
-                      <div className="text-[11px] text-indigo-400 font-medium">
+                      <div className="text-[11px] text-indigo-400 font-semibold">
                         {item.jabatan_name || '-'}
                       </div>
                     </td>
 
-                    {/* Sertifikat */}
-                    <td className="p-3.5 font-mono text-slate-300 text-[11px]">
-                      {item.badan_usaha_sertifikat || '-'}
+                    {/* Prominent Kontak PJ (Phone + WA Button) */}
+                    <td className="p-3.5 min-w-[190px] bg-indigo-950/20">
+                      {item.pj_phone ? (
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <span className="font-mono font-bold text-emerald-400 text-xs">
+                              {item.pj_phone}
+                            </span>
+                            <button
+                              onClick={(e) => copyToClipboard(e, item.pj_phone, `phone_${rowIndex}`)}
+                              className="p-1 rounded bg-slate-800 text-slate-400 hover:text-white"
+                              title="Copy No HP"
+                            >
+                              {copiedText === `phone_${rowIndex}` ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                            </button>
+                          </div>
+
+                          {/* Direct WhatsApp Chat Button */}
+                          {waUrl && (
+                            <a
+                              href={waUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={(e) => e.stopPropagation()}
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[11px] shadow-sm transition-all transform hover:scale-105"
+                            >
+                              <MessageSquare className="w-3 h-3 fill-current" />
+                              <span>Chat WhatsApp</span>
+                              <ExternalLink className="w-2.5 h-2.5 opacity-70" />
+                            </a>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-slate-500 font-mono text-[11px]">-</span>
+                      )}
                     </td>
 
-                    {/* Kota */}
-                    <td className="p-3.5 text-slate-300">
-                      {item.kota_name || '-'}
+                    {/* Email PJ */}
+                    <td className="p-3.5 min-w-[170px] bg-indigo-950/20">
+                      {item.pj_email ? (
+                        <a
+                          href={`mailto:${item.pj_email}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="inline-flex items-center gap-1 text-sky-400 hover:text-sky-300 hover:underline font-mono text-[11px]"
+                        >
+                          <Mail className="w-3 h-3 shrink-0" />
+                          <span className="truncate max-w-[150px]">{item.pj_email}</span>
+                        </a>
+                      ) : (
+                        <span className="text-slate-500 font-mono text-[11px]">-</span>
+                      )}
                     </td>
 
-                    {/* Provinsi */}
-                    <td className="p-3.5">
-                      <span className="inline-flex items-center gap-1 text-slate-300 font-medium">
-                        <MapPin className="w-3 h-3 text-indigo-400 shrink-0" />
+                    {/* Kontak Perusahaan */}
+                    <td className="p-3.5 min-w-[180px]">
+                      <div className="text-slate-200 font-mono text-[11px]">
+                        {item.badan_usaha_tlp ? `Telp: ${item.badan_usaha_tlp}` : ''}
+                      </div>
+                      <div className="text-indigo-300 text-[11px] truncate max-w-[150px]">
+                        {item.badan_usaha_email || '-'}
+                      </div>
+                    </td>
+
+                    {/* Wilayah */}
+                    <td className="p-3.5 min-w-[140px]">
+                      <div className="font-semibold text-slate-200">{item.kota_name || '-'}</div>
+                      <div className="text-[11px] text-slate-400 flex items-center gap-1">
+                        <MapPin className="w-3 h-3 text-indigo-400" />
                         {item.provinsi_name || '-'}
-                      </span>
+                      </div>
                     </td>
 
                     {/* Status */}
@@ -245,7 +332,7 @@ export default function DataTable({ data = [], onSelectEntity }) {
               })
             ) : (
               <tr>
-                <td colSpan={8} className="p-8 text-center text-slate-500 text-xs">
+                <td colSpan={9} className="p-8 text-center text-slate-500 text-xs">
                   Tidak ada data yang sesuai dengan filter pencarian Anda.
                 </td>
               </tr>
