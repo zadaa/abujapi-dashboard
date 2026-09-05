@@ -106,7 +106,7 @@ export default function App() {
 
   // Screen 1: Password Gate
   if (!isAuthenticated) {
-    return <PasswordGate onAuthenticate={handleAuthenticate} defaultPassword="abujapi2026" />;
+    return <PasswordGate onAuthenticate={handleAuthenticate} defaultPassword="madoo123" />;
   }
 
   // Screen 2: Initial Excel File Upload Gate

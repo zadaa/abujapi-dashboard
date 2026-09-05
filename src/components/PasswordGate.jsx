@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { Lock, KeyRound, ShieldCheck, ArrowRight, AlertCircle } from 'lucide-react';
 
-export default function PasswordGate({ onAuthenticate, defaultPassword = 'abujapi2026' }) {
+export default function PasswordGate({ onAuthenticate, defaultPassword = 'madoo123' }) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (password === defaultPassword || password === 'abujapi123' || password === 'abujapi') {
+    if (password === defaultPassword || password === 'madoo123') {
       setError('');
       onAuthenticate();
     } else {
@@ -77,7 +77,7 @@ export default function PasswordGate({ onAuthenticate, defaultPassword = 'abujap
         </form>
 
         <div className="mt-6 pt-4 border-t border-slate-800/80 text-center text-[11px] text-slate-500">
-          <p>Password Default: <span className="font-mono text-indigo-400 font-bold">abujapi2026</span></p>
+          <p>Sistem Terproteksi • Gunakan Password Resmi Tim Internal</p>
         </div>
 
       </div>
