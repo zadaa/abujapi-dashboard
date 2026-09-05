@@ -1,12 +1,14 @@
 import React, { useRef } from 'react';
-import { Building2, Upload, Database, Moon, Sun, CheckCircle2, ShieldCheck } from 'lucide-react';
+import { Building2, Upload, Database, Moon, Sun, CheckCircle2, ShieldCheck, LogOut } from 'lucide-react';
 
 export default function Header({ 
   totalRecords, 
   fileName, 
   onFileUpload, 
   isDarkMode, 
-  setIsDarkMode 
+  setIsDarkMode,
+  onLogout,
+  onChangeFile
 }) {
   const fileInputRef = useRef(null);
 
@@ -69,10 +71,11 @@ export default function Header({
           />
           <button
             onClick={() => fileInputRef.current?.click()}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-xs font-semibold shadow-md shadow-indigo-600/25 transition-all transform hover:-translate-y-0.5 active:translate-y-0"
+            className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white text-xs font-semibold transition-all"
+            title="Ganti atau Upload File Excel Baru"
           >
-            <Upload className="w-4 h-4" />
-            <span>Load Excel</span>
+            <Upload className="w-3.5 h-3.5 text-indigo-400" />
+            <span>Ganti File Excel</span>
           </button>
 
           {/* Theme Toggle */}
@@ -82,6 +85,15 @@ export default function Header({
             title="Toggle Theme"
           >
             {isDarkMode ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-indigo-400" />}
+          </button>
+
+          {/* Logout Button */}
+          <button
+            onClick={onLogout}
+            className="p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 hover:bg-rose-500/20 transition-all"
+            title="Keluar / Logout"
+          >
+            <LogOut className="w-4 h-4" />
           </button>
 
         </div>
